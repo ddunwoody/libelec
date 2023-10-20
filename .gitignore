@@ -5,3 +5,4 @@ nettest/nettest
 nettest/build
 rust/target
 rust/Cargo.lock
+.idea/
