@@ -5,4 +5,12 @@ nettest/nettest
 nettest/build
 rust/target
 rust/Cargo.lock
+
+static/CMakeCache.txt
+static/CMakeFiles/
+static/Makefile
+static/cmake_install.cmake
+static/lib/
+
 .idea/
+
