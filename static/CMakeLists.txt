@@ -15,13 +15,14 @@ This must point to where the `acfutils' redist directory is extracted.")
 	return()
 endif()
 
-option(XPLANE "Set to ON to build including dataref and X-PLane support")
+option(LIBELEC_VIS	"Set to ON to enable building network visualization \
+code (requires X-Plane SDK be available)")
 
 # Source file setup
 set(SRC ../src/libelec.c)
 set(HDR ../src/libelec.h ../src/libelec_types_impl.h)
 
-if(${XPLANE})
+if(${LIBELEC_VIS})
 	set(SRC ${SRC} ../src/libelec_drawing.c ../src/libelec_vis.c)
 	set(HDR ${HDR} ../src/libelec_drawing.h ../src/libelec_vis.h)
 endif()
@@ -44,14 +45,13 @@ endif()
 include_directories(libelec PUBLIC
 		"${LIBACFUTILS_REDIST}/include"	# Used by redist version
 )
-
 # Visualization support requires XPLM
-if(${XPLANE})
+if(${LIBELEC_VIS})
 	include_directories(libelec PUBLIC
-			"${LIBACFUTILS_REDIST}/${PLAT_SHORT}/include"	# Used by redist version
-			"${CMAKE_SOURCE_DIR}/../src/XPSDK/CHeaders/XPLM"
-			"${CMAKE_SOURCE_DIR}/../src/XPSDK/CHeaders/Widgets"
-	)
+	    "${LIBACFUTILS}/${PLAT_SHORT}/include"	# Used by redist version
+	    "${CMAKE_SOURCE_DIR}/XPSDK/CHeaders/XPLM"
+	    "${CMAKE_SOURCE_DIR}/XPSDK/CHeaders/Widgets"
+	    )
 endif()
 
 # Compiler flags
@@ -67,6 +67,7 @@ if(UNIX AND NOT APPLE)
 	    -fno-gnu-unique")
 endif()
 if(APPLE)
+	# Build universal binaries on macOS
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -arch x86_64 -arch arm64")
 endif()
 
@@ -91,17 +92,12 @@ endif()
 
 # When we're building with XPLM features (network visualization),
 # we need to set XPLM version support flags
-if(${XPLANE})
+if(${LIBELEC_VIS})
 	add_definitions(-DXPLM200=1 -DXPLM210=1)
 	add_definitions(-DXPLM300=1 -DXPLM301=1 -DXPLM302=1)
 else()
 	# Stops libacfutils/log.h from complaining about log_xplm_cb()
 	add_definitions(-D_LACF_WITHOUT_XPLM)
-endif()
-
-# Expose libelec values as datarefs
-if(${XPLANE})
-	add_definitions(-DLIBELEC_WITH_DRS)
 endif()
 
 if(UNIX)
@@ -111,12 +107,12 @@ endif()
 
 # Final build properties
 set_target_properties(libelec PROPERTIES PREFIX "")
+set_target_properties(libelec PROPERTIES SUFFIX "")
+if(WIN32)
+	set_target_properties(libelec PROPERTIES OUTPUT_NAME "libelec.lib")
+else()
+	set_target_properties(libelec PROPERTIES OUTPUT_NAME "libelec.a")
+endif()
 
 set_target_properties(libelec PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
     "${CMAKE_SOURCE_DIR}/lib/${PLAT_SHORT}")
-
-if(XPLANE)
-	set_target_properties(libelec PROPERTIES OUTPUT_NAME "libelec-xplane")
-else()
-	set_target_properties(libelec PROPERTIES OUTPUT_NAME "libelec")
-endif()

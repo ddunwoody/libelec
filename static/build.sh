@@ -24,7 +24,6 @@ while getopts "a:h" opt; do
 Usage: $0 [-nh] -a <libacfutils_redist> [-x]
     -h : shows the current help screen
     -a <libacfutils_redist> : the path to the libacfutils redist (usually $LIBACFUTILS_REDIST)
-    -x : builds with X-Plane support
 EOF
 		exit
 		;;
