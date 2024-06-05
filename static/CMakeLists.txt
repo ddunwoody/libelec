@@ -107,12 +107,5 @@ endif()
 
 # Final build properties
 set_target_properties(libelec PROPERTIES PREFIX "")
-set_target_properties(libelec PROPERTIES SUFFIX "")
-if(WIN32)
-	set_target_properties(libelec PROPERTIES OUTPUT_NAME "libelec.lib")
-else()
-	set_target_properties(libelec PROPERTIES OUTPUT_NAME "libelec.a")
-endif()
-
 set_target_properties(libelec PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
     "${CMAKE_SOURCE_DIR}/lib/${PLAT_SHORT}")
